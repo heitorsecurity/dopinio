@@ -1,187 +1,113 @@
 # Dopinio 🐳
 
-> **From Code to URL directly on Docker** — lightweight, zero-k8s developer platform (PaaS).
+> **Da sua máquina para a URL com um único comando — 100% no Docker, sem o peso do Kubernetes.**
 
-Dopinio is a reimagined, Docker-native fork of Epinio. While upstream Epinio requires a full Kubernetes cluster (ingress controllers, cert-manager, Tekton, and Helm), **Dopinio is built to run directly on standard Docker and Docker Compose**.
+O **Dopinio** é uma plataforma de desenvolvimento (PaaS) leve, moderna e descomplicada. 
+
+Enquanto o projeto original (Epinio) exigia clusters gigantescos de Kubernetes, Ingress Controllers complexos, Cert-Manager e dezenas de dependências difíceis de configurar, o **Dopinio** foi redesenhado do zero para quem quer **simplicidade absoluta com o Docker**:
+- Instalação em **1 minuto** com Docker Compose.
+- Não precisa entender nada de Kubernetes ou YAML infinito.
+- Suas aplicações ganham domínio, SSL e rotas automáticas na hora.
 
 ---
 
-## ⚡ Quick Start with Docker
+## 💾 Projeto Forkado & Backup do Epinio Original
 
-### 1. Inicie a stack completa do Dopinio
+> **Nota de Arquivamento:** Este projeto nasceu a partir de um fork do Epinio. Para manter o repositório leve e focado exclusivamente no ecossistema Docker, todas as branches antigas do Kubernetes foram desplugadas. Um backup completo contendo **todas as branches e histórico do Epinio original** está compactado e preservado neste repositório no arquivo:
+> 📦 [`epinio-original-full-backup.zip`](./epinio-original-full-backup.zip)
 
+---
+
+## ⚡ Instalação Rápida (Para Qualquer Usuário)
+
+Você só precisa ter o **Docker** instalado na sua máquina. Nada mais.
+
+### 1. Clonar o repositório
 ```bash
-# Clone e entre no diretório
+git clone https://github.com/heitorsecurity/dopinio.git
 cd dopinio
+```
 
-# Copie o arquivo de variáveis de ambiente
+### 2. Subir a plataforma
+```bash
+# Copia as configurações padrão prontas para uso
 cp .env.example .env
 
-# Suba os serviços (Dopinio API, Traefik, Registry e MinIO)
+# Sobe tudo em segundo plano
 docker compose up -d
 ```
 
-### 2. Acessos padrão
-
-- **API Server & Dashboard:** `http://api.dopinio.localhost:8443`
-- **Traefik Reverse Proxy:** `http://localhost:80` (HTTP) / `http://localhost:443` (HTTPS)
-- **Traefik Dashboard:** `http://localhost:8080`
-- **Registry Local:** `http://localhost:5000`
-- **MinIO Console:** `http://localhost:9001`
+Pronto! Sua PaaS já está rodando.
 
 ---
 
-## 🚀 Como Funciona o Dopinio no Docker
+## 🖥️ Painéis e Acessos Padrão
 
-1. **Docker Engine Runtime (`internal/dockerengine`)**:
-   - Conecta-se diretamente ao Docker daemon (`/var/run/docker.sock`).
-   - Gerencia contêineres de aplicações, volumes e redes dedicadas (`dopinio-net`).
-2. **Roteamento Dinâmico com Traefik**:
-   - Ao criar uma aplicação via CLI (`dopinio push`), contêineres recebem labels do Traefik automaticamente.
-   - Rotas sob demanda: `http://<app>.<namespace>.dopinio.localhost`.
-3. **Builds de Código**:
-   - Suporte a builds com `Dockerfile` ou Cloud Native Buildpacks direto no daemon do Docker.
-4. **Armazenamento de Objetos & Registro**:
-   - MinIO local para upload de tarballs de código-fonte.
-   - Registry local (v2) para armazenamento de imagens geradas.
+Assim que você sobe o Dopinio, os seguintes serviços ficam disponíveis:
+
+| Serviço | Endereço | Descrição |
+| :--- | :--- | :--- |
+| **API do Dopinio** | `http://api.dopinio.localhost:8443` | API central que orquestra suas aplicações |
+| **Traefik Proxy** | `http://localhost:80` | Roteador dinâmico automático com suporte a SSL |
+| **Painel do Traefik** | `http://localhost:8080` | Interface visual de rotas e conexões |
+| **Registro de Imagens** | `http://localhost:5000` | Registry Docker interno para guardar suas imagens |
+| **MinIO Console** | `http://localhost:9001` | Armazenamento de arquivos e fontes |
+
+*Credenciais padrão no `.env`: Usuário `admin` / Senha `change_this_secure_password`.*
 
 ---
-Once this is in place, and leaving out DNS setup, an installation reduces to:
 
-```
-helm repo add epinio https://epinio.github.io/helm-charts
-helm repo update
+## 🚀 Como Funciona no Dia a Dia
 
-helm install --namespace epinio --create-namespace epinio epinio/epinio \
-  --set global.domain=mydomain.example.com
-```
+O Dopinio cuida de todo o trabalho chato de infraestrutura para você:
 
-### CLI installation
+1. **Você cria seu código:** em Node.js, Python, Go, Rust, PHP, etc.
+2. **Você envia:**
+   ```bash
+   dopinio push --name meu-app
+   ```
+3. **O Dopinio faz o resto:**
+   - Detecta e constrói a imagem Docker automaticamente.
+   - Sobe o contêiner na rede isolada `dopinio-net`.
+   - Gera um domínio automático para você: `http://meu-app.workspace.dopinio.localhost`.
+   - Gerencia logs e reinicializações automáticas.
 
-Installation of the Epinio CLI is by downloading a binary from the
-[release page](https://github.com/epinio/epinio/releases), or usage of `brew`, i.e.
+---
 
-```
-brew install epinio
-```
+## 🗺️ Roteiro de Fases do Dopinio (Muito Mais Simples que o Epinio)
 
-There is further documentation [here](https://docs.epinio.io/getting-started/install-cli).
-
-### Quick Start Tutorial
-
-Our [QuickStart Tutorial](https://docs.epinio.io/getting-started/quickstart) works through how to create a namespace and push an application.
-
-### Reach Us
-
-- Slack: #epinio on [Rancher Users](https://rancher-users.slack.com/)
-- Github: [Discuss](https://github.com/epinio/epinio/discussions/new)
-
-### Contributing
-
-`Epinio` uses [Github Project](https://github.com/epinio/epinio/projects/1) for tracking issues.
-
-Find more information in the [Contribution Guide](https://docs.epinio.io/contribute/contributing).
-
-The [developer documentation](./docs) explains how to build and run Epinio from a git source checkout.
-
-## Features
-
-- **Security**
-  - TLS secured API server
-  - Basic Authentication to access the API
-  - __or__ OIDC-based token
-- **Epinio Clients**
-  - Web UI
-  - Epinio CLI
-- **Apps**
-  - Push code directly without further tools or steps
-  - Basic operation of your application once pushed
-  - Cloud Native Buildpacks build and containerize your code for you
-- **Configurations**
-  - CRUD operations on your configuration. A configuration can be a database, SaaS etc. A configuration can be an external component or can be created using `epinio configuration`.
-  - Bind configurations to apps.
-
-## Example apps
-
-- Rails: https://github.com/epinio/example-rails
-- Java: https://github.com/spring-projects/spring-petclinic/
-- Paketo Buildpack example apps: https://github.com/paketo-buildpacks/samples
-
-## License
-
-Copyright (c) 2020-2024 [SUSE, LLC](https://suse.com)
-
-Copyright (c) 2025-2026 [Krumware LLC](https://www.krum.io)
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-## Breaking Changes & Migrations
-
-### 1.12 to 1.13
-
-Epinio 1.13 rehomes configurations for the staging workloads to a more standardized format that supports a larger variety of configs.  These are no longer configured directly on the Epinio container via ENV variables or through Viper CLI flags but rather read from an in-cluster ConfigMap at staging time.
-
-To summarize, version 1.12 referenced the following ENV variables:
-
-```bash
-STAGING_SERVICE_ACCOUNT_NAME
-STAGING_RESOURCE_CPU
-STAGING_RESOURCE_MEMORY
-STAGING_RESOURCE_DISK
+```mermaid
+flowchart LR
+    Fase1["Fase 1: Fundação & Rebranding ✅"] --> Fase2["Fase 2: Motor Docker Nativo ⏳"]
+    Fase2 --> Fase3["Fase 3: CLI 'Zero Dúvidas' 🛠️"]
+    Fase3 --> Fase4["Fase 4: Dashboard Web Simples 🌐"]
+    Fase4 --> Fase5["Fase 5: One-Line Deploy 🚀"]
 ```
 
-These ENV variables were configured directly by the Helm Chart in the deployment's `env` section.  This is no longer the case as we push in the direction of improving configurability of these staging workloads.  These configurations are now more expansive, including resource requests vs. limits, node tolerations, affinity criteria, etc.  And as such, the ENV approach to this would become unruly as capabilities grew.  Instead, we are conforming more closely to how Kubernetes would structure these configs directly in the Job YAML.  These configurations are now read in from chart values into the stage script ConfigMaps.  The contents of this ConfigMap, as far as the Epinio Server is concerned, would resemble the following (with examples):
+### ✅ Fase 1: Fundação & Rebranding (Concluída)
+- Módulo e CLI renomeados para `dopinio`.
+- Stack completa com `docker-compose.yml`, `Dockerfile` multi-stage, Traefik, MinIO e Registry.
+- Limpeza de branches antigas e arquivamento do Epinio original no backup `.zip`.
 
-```yaml
-serviceAccountName: "epinio-server"
-ttlSecondsAfterFinished: 300
-resources:
-  requests:
-    cpu: "200m"
-    memory: "1Gi"
-  # limits:
-  #   cpu: ""
-  #   memory: ""
-storage:
-  cache:
-    emptyDir: false
-    size: 1Gi
-    storageClassName: ""
-    volumeMode: Filesystem
-    accessModes:
-    - ReadWriteOnce
-  sourceBlobs:
-    emptyDir: true
-    # size: 1Gi
-    # storageClassName: ""
-    # volumeMode: Filesystem
-    # accessModes:
-    # - ReadWriteOnce
-nodeSelector: {}
-  # kubernetes.io/os: linux
-affinity: {}
-  # nodeAffinity:
-  #   requiredDuringSchedulingIgnoredDuringExecution:
-  #     nodeSelectorTerms:
-  #     - matchExpressions:
-  #       - key: kubernetes.io/os
-  #         operator: In
-  #         values:
-  #         - linux
-tolerations: []
-  # - key: "kubernetes.io/os"
-  #   operator: "Equal"
-  #   value: "linux"
-  #   effect: "NoSchedule"
-```
+### ⏳ Fase 2: Motor Docker Nativo (`internal/dockerengine`)
+- Conexão direta com o socket do Docker (`/var/run/docker.sock` ou Windows named pipes).
+- Gerenciamento de ciclo de vida do contêiner (criar, parar, reiniciar, deletar).
+- Integração de volumes persistentes e injeção de variáveis de ambiente sem precisar de Kubernetes Secrets/ConfigMaps.
 
+### 🛠️ Fase 3: CLI "Zero Dúvidas"
+- Comandos simples e intuitivos:
+  - `dopinio up`: sobe o servidor local.
+  - `dopinio push`: publica o app da pasta atual direto para a URL.
+  - `dopinio apps`: lista aplicações com consumo de memória e status.
+  - `dopinio logs <app>`: exibe logs em tempo real sem sintaxe estranha.
+
+### 🌐 Fase 4: Dashboard Web Integrado
+- Interface gráfica moderna e responsiva para criar, configurar e monitorar seus apps diretamente pelo navegador, com métricas em tempo real.
+
+### 🚀 Fase 5: One-Line Install Script
+- Instalação com uma única linha no Linux/macOS (`curl -fsSL https://dopinio.io/install.sh | sh`) ou script PowerShell no Windows.
+
+---
+
+## 🤝 Licença
+Distribuído sob a licença Apache-2.0. Baseado no projeto Epinio.

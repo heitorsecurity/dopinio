@@ -33,7 +33,7 @@ import (
 )
 
 var (
-	defaultSettingsFilePath = "epinio/settings.yaml"
+	defaultSettingsFilePath = "dopinio/settings.yaml"
 )
 
 // Settings represents a epinio settings
@@ -82,7 +82,7 @@ func LoadFrom(file string) (*Settings, error) {
 
 	v.SetConfigType("yaml")
 	v.SetConfigFile(file)
-	v.SetEnvPrefix("EPINIO")
+	v.SetEnvPrefix("DOPINIO")
 	v.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 
 	v.SetDefault("namespace", "workspace")

@@ -57,9 +57,9 @@ func NewRootCmd() (*cobra.Command, error) {
 
 	rootCmd := &cobra.Command{
 		Args:          cobra.MaximumNArgs(0),
-		Use:           "epinio",
-		Short:         "Epinio cli",
-		Long:          `epinio cli is the official command line interface for Epinio PaaS `,
+		Use:           "dopinio",
+		Short:         "Dopinio CLI - Docker-powered Developer Platform",
+		Long:          `dopinio cli is the command line interface for Dopinio PaaS on Docker`,
 		Version:       version.Version,
 		SilenceErrors: true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -96,7 +96,7 @@ func NewRootCmd() (*cobra.Command, error) {
 
 	settingsLocation := ""
 
-	if pf.Lookup("settings-file") == nil && os.Getenv("EPINIO_SETTINGS") == "" {
+	if pf.Lookup("settings-file") == nil && os.Getenv("DOPINIO_SETTINGS") == "" && os.Getenv("EPINIO_SETTINGS") == "" {
 		settingsLocation, err = settings.DefaultLocation()
 		if err != nil {
 			// Error can happen on a read-only filesystem (like the one of the epinio
@@ -109,7 +109,7 @@ func NewRootCmd() (*cobra.Command, error) {
 	if err = viper.BindPFlag("settings-file", pf.Lookup("settings-file")); err != nil {
 		return nil, err
 	}
-	argToEnv["settings-file"] = "EPINIO_SETTINGS"
+	argToEnv["settings-file"] = "DOPINIO_SETTINGS"
 
 	config.KubeConfigFlags(pf, argToEnv)
 	duration.Flags(pf, argToEnv)

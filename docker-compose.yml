@@ -1,0 +1,115 @@
+services:
+  # ==========================================
+  # Dopinio Server (Core PaaS Engine)
+  # ==========================================
+  dopinio-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dopinio/server:latest
+    container_name: dopinio-server
+    restart: unless-stopped
+    ports:
+      - "${DOPINIO_PORT:-8443}:8443"
+    environment:
+      - PORT=8443
+      - DOPINIO_RUNTIME=docker
+      - DOPINIO_DOMAIN=${DOPINIO_DOMAIN:-dopinio.localhost}
+      - DOPINIO_ADMIN_USER=${DOPINIO_ADMIN_USER:-admin}
+      - DOPINIO_ADMIN_PASSWORD=${DOPINIO_ADMIN_PASSWORD:-password}
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - S3_ENDPOINT=http://minio:9000
+      - S3_ACCESS_KEY_ID=${MINIO_ROOT_USER:-dopinio}
+      - S3_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD:-dopiniosecret}
+      - S3_BUCKET=dopinio
+      - REGISTRY_URL=http://registry:5000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - dopinio-data:/var/lib/dopinio
+    networks:
+      - dopinio-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dopinio.rule=Host(`api.${DOPINIO_DOMAIN:-dopinio.localhost}`)"
+      - "traefik.http.routers.dopinio.entrypoints=web,websecure"
+      - "traefik.http.services.dopinio.loadbalancer.server.port=8443"
+    depends_on:
+      - traefik
+      - minio
+      - registry
+
+  # ==========================================
+  # Traefik Reverse Proxy & Ingress
+  # ==========================================
+  traefik:
+    image: traefik:v3.1
+    container_name: dopinio-traefik
+    restart: unless-stopped
+    command:
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=dopinio-net"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # Traefik Dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certificates:/certificates
+    networks:
+      - dopinio-net
+
+  # ==========================================
+  # Local Container Registry
+  # ==========================================
+  registry:
+    image: registry:2
+    container_name: dopinio-registry
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+    volumes:
+      - registry-data:/var/lib/registry
+    networks:
+      - dopinio-net
+
+  # ==========================================
+  # MinIO (S3-compatible Object Storage)
+  # ==========================================
+  minio:
+    image: minio/minio:latest
+    container_name: dopinio-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-dopinio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-dopiniosecret}
+    volumes:
+      - minio-data:/data
+    networks:
+      - dopinio-net
+
+networks:
+  dopinio-net:
+    name: dopinio-net
+    driver: bridge
+
+volumes:
+  dopinio-data:
+    name: dopinio-data
+  traefik-certificates:
+    name: dopinio-traefik-certs
+  registry-data:
+    name: dopinio-registry-data
+  minio-data:
+    name: dopinio-minio-data
+

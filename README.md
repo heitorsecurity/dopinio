@@ -1,38 +1,51 @@
-# Epinio
+# Dopinio 🐳
 
-Opinionated platform that runs on Kubernetes to take you from Code to URL in one step.
+> **From Code to URL directly on Docker** — lightweight, zero-k8s developer platform (PaaS).
 
-[![godoc](https://pkg.go.dev/badge/epinio/epinio)](https://pkg.go.dev/github.com/epinio/epinio/internal/api/v1)
-[![Go Report Card](https://goreportcard.com/badge/github.com/epinio/epinio)](https://goreportcard.com/report/github.com/epinio/epinio)
-[![CI](https://github.com/epinio/epinio/actions/workflows/main.yml/badge.svg)](https://github.com/epinio/epinio/actions/workflows/main.yml)
-[![golangci-lint](https://github.com/epinio/epinio/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/epinio/epinio/actions/workflows/golangci-lint.yml)
-<img src="./docs/epinio.png" align="left" width="100" height="50%">
+Dopinio is a reimagined, Docker-native fork of Epinio. While upstream Epinio requires a full Kubernetes cluster (ingress controllers, cert-manager, Tekton, and Helm), **Dopinio is built to run directly on standard Docker and Docker Compose**.
 
-## What problem does Epinio solve?
+---
 
-Epinio makes it easy for developers to develop their applications running in Kubernetes clusters. Easy means:
+## ⚡ Quick Start with Docker
 
-- No experience with Kubernetes is needed
-- No steep learning curve
-- Quick local setup with minimal configuration
-- Deploying to production the same as deploying in development
+### 1. Inicie a stack completa do Dopinio
 
-[Kubernetes](https://kubernetes.io/) is the standard for container orchestration.
-Developers may want to use Kubernetes for its benefits or because their Ops team has chosen it.
-In either case, working with Kubernetes can be complex depending on the environment.
-It has a steep learning curve and doing it right is a full-time job.
-Developers should spend their time working on their applications, not doing operations.
+```bash
+# Clone e entre no diretório
+cd dopinio
 
-Epinio adds the needed abstractions and tools to allow developers to use Kubernetes as a [PaaS](https://en.wikipedia.org/wiki/Platform_as_a_service).
+# Copie o arquivo de variáveis de ambiente
+cp .env.example .env
 
+# Suba os serviços (Dopinio API, Traefik, Registry e MinIO)
+docker compose up -d
+```
 
-## Documentation
+### 2. Acessos padrão
 
-Documentation is available at [docs.epinio.io](https://docs.epinio.io/).
+- **API Server & Dashboard:** `http://api.dopinio.localhost:8443`
+- **Traefik Reverse Proxy:** `http://localhost:80` (HTTP) / `http://localhost:443` (HTTPS)
+- **Traefik Dashboard:** `http://localhost:8080`
+- **Registry Local:** `http://localhost:5000`
+- **MinIO Console:** `http://localhost:9001`
 
-### Installation
+---
 
-Requires a Kubernetes cluster, an Ingress Controller and a Cert Manager as explained in the [installation](https://docs.epinio.io/getting-started/install-epinio) documentation.
+## 🚀 Como Funciona o Dopinio no Docker
+
+1. **Docker Engine Runtime (`internal/dockerengine`)**:
+   - Conecta-se diretamente ao Docker daemon (`/var/run/docker.sock`).
+   - Gerencia contêineres de aplicações, volumes e redes dedicadas (`dopinio-net`).
+2. **Roteamento Dinâmico com Traefik**:
+   - Ao criar uma aplicação via CLI (`dopinio push`), contêineres recebem labels do Traefik automaticamente.
+   - Rotas sob demanda: `http://<app>.<namespace>.dopinio.localhost`.
+3. **Builds de Código**:
+   - Suporte a builds com `Dockerfile` ou Cloud Native Buildpacks direto no daemon do Docker.
+4. **Armazenamento de Objetos & Registro**:
+   - MinIO local para upload de tarballs de código-fonte.
+   - Registry local (v2) para armazenamento de imagens geradas.
+
+---
 Once this is in place, and leaving out DNS setup, an installation reduces to:
 
 ```

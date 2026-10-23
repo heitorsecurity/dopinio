@@ -33,6 +33,19 @@ export LDFLAGS += -X github.com/epinio/epinio/internal/version.Version=$(VERSION
 
 .DEFAULT_GOAL := build
 
+.PHONY: docker-build docker-up docker-down docker-logs
+docker-build: ## Build the Dopinio Docker image
+	docker compose build
+
+docker-up: ## Start the full Dopinio Docker stack
+	docker compose up -d
+
+docker-down: ## Stop the Dopinio Docker stack
+	docker compose down
+
+docker-logs: ## Follow Dopinio Docker stack logs
+	docker compose logs -f
+
 .PHONY: help
 help: ## Display this help.
 	@awk 'BEGIN { section = ""; print "\nUsage:\n  make \033[36m<target>\033[0m" } /^#{5,}/ { next } /^# [A-Za-z]/ { section = substr($$0, 3); next } /^[a-zA-Z0-9_.-]+:.*$$/ { if ($$1 == ".PHONY") next; if (section != "") { print "\n\033[1m" section "\033[0m"; section = "" } split($$1, parts, ":"); printf "  \033[36m%-20s\033[0m\n", parts[1] }' $(MAKEFILE_LIST)

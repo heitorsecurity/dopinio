@@ -2,112 +2,116 @@
 
 > **Da sua máquina para a URL com um único comando — 100% no Docker, sem o peso do Kubernetes.**
 
-O **Dopinio** é uma plataforma de desenvolvimento (PaaS) leve, moderna e descomplicada. 
+O **Dopinio** é uma plataforma PaaS para desenvolvedores projetada para ser **extremanente fácil e intuitiva**.
 
-Enquanto o projeto original (Epinio) exigia clusters gigantescos de Kubernetes, Ingress Controllers complexos, Cert-Manager e dezenas de dependências difíceis de configurar, o **Dopinio** foi redesenhado do zero para quem quer **simplicidade absoluta com o Docker**:
-- Instalação em **1 minuto** com Docker Compose.
-- Não precisa entender nada de Kubernetes ou YAML infinito.
-- Suas aplicações ganham domínio, SSL e rotas automáticas na hora.
+Chega de sofrer com clusters Kubernetes, arquivos YAML quilométricos, Ingress Controllers quebrados ou Cert-Managers difíceis de configurar. No Dopinio, basta ter o **Docker** e rodar **um único comando**.
 
 ---
 
-## 💾 Projeto Forkado & Backup do Epinio Original
+## ⚡ Instalação com Um Único Comando (CURL)
 
-> **Nota de Arquivamento:** Este projeto nasceu a partir de um fork do Epinio. Para manter o repositório leve e focado exclusivamente no ecossistema Docker, todas as branches antigas do Kubernetes foram desplugadas. Um backup completo contendo **todas as branches e histórico do Epinio original** está compactado e preservado neste repositório no arquivo:
-> 📦 [`epinio-original-full-backup.zip`](./epinio-original-full-backup.zip)
-
----
-
-## ⚡ Instalação Rápida (Para Qualquer Usuário)
-
-Você só precisa ter o **Docker** instalado na sua máquina. Nada mais.
-
-### 1. Clonar o repositório
+### No Linux / macOS / WSL:
 ```bash
-git clone https://github.com/heitorsecurity/dopinio.git
-cd dopinio
+curl -fsSL https://raw.githubusercontent.com/heitorsecurity/dopinio/main/install.sh | bash
 ```
 
-### 2. Subir a plataforma
-```bash
-# Copia as configurações padrão prontas para uso
-cp .env.example .env
-
-# Sobe tudo em segundo plano
-docker compose up -d
+### No Windows (PowerShell):
+```powershell
+irm https://raw.githubusercontent.com/heitorsecurity/dopinio/main/install.ps1 | iex
 ```
 
-Pronto! Sua PaaS já está rodando.
+### 🎯 O que o instalador faz automaticamente por você:
+1. **Verifica o Docker**: Checa se o Docker e o Docker Compose estão instalados e ativos.
+2. **Cria a pasta**: Cria o diretório `~/.dopinio` limpo e isolado.
+3. **Gera Credenciais Seguras**: Cria um arquivo `.env` com senhas seguras geradas na hora.
+4. **Sobe toda a Infraestrutura**: Inicia a API do Dopinio, o Traefik (proxy dinâmico), Registry local e MinIO.
+5. **Gera suas URLs**: Mostra na hora na tela todos os links e credenciais prontos para clicar e usar.
 
 ---
 
 ## 🖥️ Painéis e Acessos Padrão
 
-Assim que você sobe o Dopinio, os seguintes serviços ficam disponíveis:
+Assim que o instalador termina, os seguintes serviços já estão no ar:
 
-| Serviço | Endereço | Descrição |
+| Serviço | Endereço | Para que serve? |
 | :--- | :--- | :--- |
-| **API do Dopinio** | `http://api.dopinio.localhost:8443` | API central que orquestra suas aplicações |
-| **Traefik Proxy** | `http://localhost:80` | Roteador dinâmico automático com suporte a SSL |
-| **Painel do Traefik** | `http://localhost:8080` | Interface visual de rotas e conexões |
-| **Registro de Imagens** | `http://localhost:5000` | Registry Docker interno para guardar suas imagens |
-| **MinIO Console** | `http://localhost:9001` | Armazenamento de arquivos e fontes |
-
-*Credenciais padrão no `.env`: Usuário `admin` / Senha `change_this_secure_password`.*
+| **API do Dopinio** | `http://api.dopinio.localhost:8443` | O cérebro do Dopinio que gerencia seus contêineres |
+| **Traefik Proxy** | `http://localhost:80` | Encaminha o tráfego e gera domínios automaticamente |
+| **Painel Traefik** | `http://localhost:8080` | Interface visual de rotas ativas e saúde dos serviços |
+| **Registro Docker** | `http://localhost:5000` | Armazena as imagens criadas dos seus projetos |
+| **MinIO Console** | `http://localhost:9001` | Guarda os arquivos de código e artefatos de build |
 
 ---
 
-## 🚀 Como Funciona no Dia a Dia
+## 🚀 Como Publicar seu Projeto (Code to URL)
 
-O Dopinio cuida de todo o trabalho chato de infraestrutura para você:
+Você não precisa de Dockerfile nem de arquivos complexos.
 
-1. **Você cria seu código:** em Node.js, Python, Go, Rust, PHP, etc.
-2. **Você envia:**
+1. Abra o terminal na pasta de qualquer projeto seu (Node, Python, Go, PHP, etc.):
+   ```bash
+   cd meu-projeto
+   ```
+
+2. Envie para o Dopinio:
    ```bash
    dopinio push --name meu-app
    ```
-3. **O Dopinio faz o resto:**
-   - Detecta e constrói a imagem Docker automaticamente.
-   - Sobe o contêiner na rede isolada `dopinio-net`.
-   - Gera um domínio automático para você: `http://meu-app.workspace.dopinio.localhost`.
-   - Gerencia logs e reinicializações automáticas.
+
+3. **Pronto!** O Dopinio constrói a imagem, sobe o contêiner e te entrega a URL:
+   👉 `http://meu-app.workspace.dopinio.localhost`
 
 ---
 
-## 🗺️ Roteiro de Fases do Dopinio (Muito Mais Simples que o Epinio)
+## 🕹️ Comandos Úteis do Dia a Dia
+
+Dentro de `~/.dopinio`:
+```bash
+# Ver todos os contêineres e status
+docker compose ps
+
+# Acompanhar os logs de tudo em tempo real
+docker compose logs -f
+
+# Parar a plataforma
+docker compose down
+
+# Iniciar novamente quando reiniciar a máquina
+docker compose up -d
+```
+
+---
+
+## 🗺️ Roteiro de Fases do Dopinio
 
 ```mermaid
 flowchart LR
-    Fase1["Fase 1: Fundação & Rebranding ✅"] --> Fase2["Fase 2: Motor Docker Nativo ⏳"]
+    Fase1["Fase 1: One-Line Curl & Fundação ✅"] --> Fase2["Fase 2: Motor Docker Nativo ⏳"]
     Fase2 --> Fase3["Fase 3: CLI 'Zero Dúvidas' 🛠️"]
     Fase3 --> Fase4["Fase 4: Dashboard Web Simples 🌐"]
-    Fase4 --> Fase5["Fase 5: One-Line Deploy 🚀"]
 ```
 
-### ✅ Fase 1: Fundação & Rebranding (Concluída)
-- Módulo e CLI renomeados para `dopinio`.
-- Stack completa com `docker-compose.yml`, `Dockerfile` multi-stage, Traefik, MinIO e Registry.
-- Limpeza de branches antigas e arquivamento do Epinio original no backup `.zip`.
+### ✅ Fase 1: Fundação & Instalador de Linha Única (Concluída)
+- Scripts de instalação automática via `curl` e PowerShell (`install.sh` e `install.ps1`).
+- Verificação inteligente de requisitos e geração automática de senhas.
+- Branches antigas desplugadas e backup histórico do Epinio original preservado em `epinio-original-full-backup.zip`.
 
 ### ⏳ Fase 2: Motor Docker Nativo (`internal/dockerengine`)
-- Conexão direta com o socket do Docker (`/var/run/docker.sock` ou Windows named pipes).
-- Gerenciamento de ciclo de vida do contêiner (criar, parar, reiniciar, deletar).
-- Integração de volumes persistentes e injeção de variáveis de ambiente sem precisar de Kubernetes Secrets/ConfigMaps.
+- Conexão nativa e direta com o Docker Engine via `/var/run/docker.sock`.
+- Ciclo de vida completo dos apps (criar, iniciar, escalar, parar e deletar).
+- Atribuição automática de portas e labels do Traefik.
 
 ### 🛠️ Fase 3: CLI "Zero Dúvidas"
-- Comandos simples e intuitivos:
-  - `dopinio up`: sobe o servidor local.
-  - `dopinio push`: publica o app da pasta atual direto para a URL.
-  - `dopinio apps`: lista aplicações com consumo de memória e status.
-  - `dopinio logs <app>`: exibe logs em tempo real sem sintaxe estranha.
+- Comandos intuitivos: `dopinio up`, `dopinio push`, `dopinio apps`, `dopinio logs <app>`.
 
 ### 🌐 Fase 4: Dashboard Web Integrado
-- Interface gráfica moderna e responsiva para criar, configurar e monitorar seus apps diretamente pelo navegador, com métricas em tempo real.
-
-### 🚀 Fase 5: One-Line Install Script
-- Instalação com uma única linha no Linux/macOS (`curl -fsSL https://dopinio.io/install.sh | sh`) ou script PowerShell no Windows.
+- Interface moderna no navegador para ver suas aplicações, consumo de memória/CPU e logs sem precisar abrir terminal.
 
 ---
+
+## 💾 Projeto Forkado & Backup do Epinio Original
+
+> **Nota de Arquivamento:** Este projeto é um fork do Epinio reimaginado para o ecossistema Docker. Um backup completo contendo todo o histórico e branches do Epinio original está compactado e disponível no arquivo:
+> 📦 [`epinio-original-full-backup.zip`](./epinio-original-full-backup.zip)
 
 ## 🤝 Licença
 Distribuído sob a licença Apache-2.0. Baseado no projeto Epinio.

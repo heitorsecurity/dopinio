@@ -107,3 +107,4 @@ Write-Host "   • Ver status:   cd $InstallDir; docker compose ps" -ForegroundC
 Write-Host "   • Ver logs:     cd $InstallDir; docker compose logs -f" -ForegroundColor DarkGray
 Write-Host "   • Parar tudo:   cd $InstallDir; docker compose down" -ForegroundColor DarkGray
 Write-Host "================================================================`n" -ForegroundColor Cyan
+

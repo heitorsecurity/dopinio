@@ -170,3 +170,4 @@ func (r *Router) StreamLogs(c *gin.Context) {
 
 	_ = r.engine.StreamLogs(ctx, ns, appName, follow, c.Writer)
 }
+

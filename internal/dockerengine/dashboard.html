@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dopinio 🐳 - Painel de Controle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --border: #1f2937;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #10b981;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --code-bg: #1e293b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      background-color: rgba(17, 24, 39, 0.8);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .logo-badge {
+      background-color: rgba(59, 130, 246, 0.15);
+      color: var(--primary);
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    .quick-start {
+      background: linear-gradient(135deg, rgba(30, 58, 138, 0.4) 0%, rgba(17, 24, 39, 0.6) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .quick-start code {
+      font-family: 'JetBrains Mono', monospace;
+      background-color: var(--code-bg);
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      color: #93c5fd;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .apps-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      overflow: hidden;
+    }
+
+    .apps-table th, .apps-table td {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .apps-table th {
+      background-color: rgba(31, 41, 55, 0.5);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .apps-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .status-running {
+      background-color: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .app-url {
+      color: var(--primary);
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+    }
+
+    .app-url:hover {
+      text-decoration: underline;
+    }
+
+    .btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-danger {
+      background-color: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+      background-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-content">
+      <div class="logo">
+        <span>🐳 Dopinio</span>
+        <span class="logo-badge">Docker Native PaaS</span>
+      </div>
+      <div>
+        <button class="btn btn-secondary" onclick="loadApps()">🔄 Atualizar</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="quick-start">
+      <h3 style="font-size: 1.1rem; color: #fff;">🚀 Como colocar um app no ar em segundos:</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        Entre na pasta de qualquer projeto seu e execute no terminal:
+      </p>
+      <code>
+        <span>dopinio push --name meu-app</span>
+        <button class="btn btn-secondary" onclick="navigator.clipboard.writeText('dopinio push --name meu-app')">Copiar</button>
+      </code>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Aplicações Ativas</div>
+        <div class="stat-value" id="stat-apps">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Runtime Engine</div>
+        <div class="stat-value" style="color: var(--primary);">Docker</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Proxy & Ingress</div>
+        <div class="stat-value" style="color: var(--success);">Traefik v3</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Status da Plataforma</div>
+        <div class="stat-value" style="color: var(--success);" id="stat-status">Online</div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <h2>Suas Aplicações</h2>
+    </div>
+
+    <table class="apps-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Namespace</th>
+          <th>Status</th>
+          <th>URL Pública</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="apps-list">
+        <tr>
+          <td colspan="5" class="empty-state">Carregando aplicações...</td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    async function loadApps() {
+      const tbody = document.getElementById('apps-list');
+      try {
+        const res = await fetch('/docker/namespaces/workspace/apps');
+        if (!res.ok) throw new Error('Falha ao comunicar com a API');
+        const data = await res.json();
+        const apps = data.apps || [];
+
+        document.getElementById('stat-apps').innerText = apps.length;
+
+        if (apps.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="empty-state">
+                <p style="margin-bottom: 0.5rem; font-size: 1.1rem;">Nenhuma aplicação rodando no momento.</p>
+                <p style="font-size: 0.875rem;">Suba seu primeiro projeto com <code>dopinio push --name meu-app</code></p>
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = apps.map(app => `
+          <tr>
+            <td style="font-weight: 600;">${app.name}</td>
+            <td style="color: var(--text-muted);">${app.namespace}</td>
+            <td>
+              <span class="status-pill status-running">● ${app.status}</span>
+            </td>
+            <td>
+              <a href="${app.url}" target="_blank" class="app-url">${app.url} ↗</a>
+            </td>
+            <td>
+              <button class="btn btn-secondary" onclick="viewLogs('${app.namespace}', '${app.name}')">Logs</button>
+              <button class="btn btn-danger" onclick="deleteApp('${app.namespace}', '${app.name}')">Deletar</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="empty-state" style="color: #f87171;">
+              Erro ao carregar aplicações: ${err.message}
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    async function deleteApp(ns, name) {
+      if (!confirm(`Deseja realmente parar e excluir a aplicação ${name}?`)) return;
+      try {
+        const res = await fetch(`/docker/namespaces/${ns}/apps/${name}`, { method: 'DELETE' });
+        if (res.ok) {
+          loadApps();
+        } else {
+          alert('Erro ao excluir aplicação');
+        }
+      } catch (err) {
+        alert('Erro de conexão: ' + err.message);
+      }
+    }
+
+    function viewLogs(ns, name) {
+      window.open(`/docker/namespaces/${ns}/apps/${name}/logs?follow=true`, '_blank');
+    }
+
+    // Carrega ao abrir a página
+    loadApps();
+    // Atualiza a cada 10 segundos
+    setInterval(loadApps, 10000);
+  </script>
+</body>
+</html>

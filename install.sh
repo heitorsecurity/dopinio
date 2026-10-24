@@ -129,3 +129,4 @@ echo -e "   • Ver status:   ${CYAN}cd ${INSTALL_DIR} && docker compose ps${NC}
 echo -e "   • Ver logs:     ${CYAN}cd ${INSTALL_DIR} && docker compose logs -f${NC}"
 echo -e "   • Parar tudo:   ${CYAN}cd ${INSTALL_DIR} && docker compose down${NC}"
 echo -e "${CYAN}================================================================${NC}\n"
+

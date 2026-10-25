@@ -34,3 +34,4 @@ func (r *Router) RegisterDashboard(router *gin.Engine) {
 		c.Redirect(http.StatusTemporaryRedirect, "/dashboard")
 	})
 }
+

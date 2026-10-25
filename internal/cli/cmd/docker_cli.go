@@ -198,3 +198,4 @@ var CmdDeleteApp = &cobra.Command{
 		return c.Run()
 	},
 }
+
